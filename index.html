@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FP_Cantor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body ng-app="application">
+
+<div class="container" ng-controller="currencyController">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-6">
+                    <ul class="nav nav-pills ">
+                        <li><h4 class="text-left">Exchange</h4></li>
+                    </ul>
+                </div>
+
+                <div class="col-xs-6text-right">
+                    <ul class="nav nav-pills pull-right text-justify">
+                        <li ng-if="showUserName" role="presentation">
+                            <p class="navbar-text" >Logged as: {{ userEmail }} </p>
+                        </li>
+                        <li role="presentation">
+                                <a href="#" title="Log In" data-toggle="modal" data-target="#loginModal">
+                                    <img src="img/glyphicons-387-log-in.png" alt="" >
+                                </a>
+                        </li>
+                        <li ng-click="userName()" role="presentation">
+                            <a href="#" title="Edit profile">
+                                <img src="img/glyphicons-137-cogwheel.png" alt="">
+                            </a>
+                        </li>
+                        <li ng-click="signOut()"role="presentation">
+                            <a title="Log Out" href="#" >
+                                <img src="img/glyphicons-64-power.png" alt="">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+
+    <!--Login modal-->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                    <form class="form-signin" ng-submit="userLogIn()">
+                        <h2 class="form-signin-heading">Please sign in</h2>
+                        <label for="inputEmail" class="sr-only">Email address</label>
+                        <input ng-model="loginValue" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                        <label for="inputPassword" class="sr-only">Password</label>
+                        <input ng-model="passwordValue" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="remember-me"> Remember me
+                            </label>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
+                            <button type="submit" id="submit" value="Submit" class="btn btn-primary btn-sm" >Sign in</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end Login modal-->
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="table-responsive panel-primary">
+                <div class="panel-heading ">Currencies</div>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th ng-repeat="heading in ['Currency', 'Unit', 'Value','Actions']">
+                            {{heading}}
+                        </th>
+                    </tr>
+                    </thead>
+                    <thbody>
+                        <tr ng-repeat="currencie in currencies.items">
+                            <td >{{ currencie.code }}
+                                <a class="chartIcon" ng-click="currencyChart(currencie)" href="">
+                                    <img src="img/glyphicons-41-stats.png" alt="">
+                                </a>
+                            </td>
+                            <td> {{ currencie.unit }}</td>
+                            <td> {{ formatNumber(currencie.purchasePrice) }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#buyModal">Buy</button>
+                            </td>
+                        </tr>
+                        <tr class="trBackground">
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr class="trBackground">
+                            <td colspan="4">
+                                <h5>{{ currendyInfo}} <img class="chartIcon" ng-src="{{ icon }}"></h5>
+                                <canvas id="line" class="chart chart-line" chart-data="data"
+                                        chart-labels="labels" chart-series="series" chart-options="options"
+                                        chart-dataset-override="datasetOverride" chart-click="onClick">
+                                </canvas>
+                            </td>
+                        </tr>
+                    </thbody>
+                </table>
+
+                <!-- To do: To do: Automatically load selected currency data -->
+                <!-- Modal -->
+                <div class="modal fade" id="buyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <label for="">Currency</label>
+                                            <p ng-modal="currencyValue">{{ currencies.items[0].code }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <label for="">Unit</label>
+                                            <p>{{ currencies.items[0].unit }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                        <label for="">Value</label>
+                                        <p>{{ formatNumber(currencies.items[0].purchasePrice) }}</p>
+                                    </div></div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <label for="">Amount</label>
+                                            <input id="amount" ng-model="amountValue" type="text" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <div class="form-group ">
+                                            <label for="">Avalible PLN:
+                                                {{
+                                                   formatNumber((currencyUsers['avalivblePLN'].pln)
+                                                   - (amountValue * currencies.items[0].purchasePrice))
+                                                }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 text-right">
+                                        <div class="form-group">
+                                            <label for="">Sum = {{ formatNumber(amountValue * currencies.items[0].purchasePrice) }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+                                <button ng-click="buyCurrencies()" type="button" class="btn btn-primary btn-xs">Buy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-6">
+            <div class="table-responsive panel-primary">
+                <div class="panel-heading">My Walet</div>
+                <table class="table table-hover" ng-if="showUserTable">
+                    <thead>
+                        <tr>
+                            <th ng-repeat="heading in ['Currency', 'Unit price', 'Amount', 'Value','Actions']">
+                                {{ heading }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <thbody>
+                        <!--To do: map currencyUsers and currencies, and use ng-repeat-->
+                        <tr>
+                            <td>{{ currencyUsers['USD'].currency }}</td>
+                            <td>{{ formatNumber(currencies.items[0].sellPrice) }}</td>
+                            <td>{{ currencyUsers['USD'].amount }}</td>
+                            <td>{{ formatNumber(currencies.items[0].sellPrice * currencyUsers['USD'].amount) }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-xs">Sell</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ currencyUsers['EUR'].currency }}</td>
+                            <td>{{ formatNumber(currencies.items[1].sellPrice) }}</td>
+                            <td>{{ currencyUsers['EUR'].amount }}</td>
+                            <td>{{ formatNumber(currencies.items[1].sellPrice * currencyUsers['EUR'].amount) }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-xs">Sell</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ currencyUsers['CHF'].currency }}</td>
+                            <td>{{ formatNumber(currencies.items[2].sellPrice) }}</td>
+                            <td>{{ currencyUsers['CHF'].amount }}</td>
+                            <td>{{ formatNumber(currencies.items[2].sellPrice * currencyUsers['CHF'].amount) }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-xs">Sell</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ currencyUsers['RUB'].currency }}</td>
+                            <td>{{ formatNumber(currencies.items[3].sellPrice) }}</td>
+                            <td>{{ currencyUsers['RUB'].amount }}</td>
+                            <td>{{ formatNumber(currencies.items[3].sellPrice * currencyUsers['RUB'].amount) }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-xs">Sell</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ currencyUsers['CZK'].currency }}</td>
+                            <td>{{ formatNumber(currencies.items[4].sellPrice) }}</td>
+                            <td>{{ currencyUsers['CZK'].amount }}</td>
+                            <td>{{ formatNumber(currencies.items[4].sellPrice * currencyUsers['CZK'].amount) }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-xs">Sell</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ currencyUsers['GBP'].currency }}</td>
+                            <td>{{ formatNumber(currencies.items[5].sellPrice) }}</td>
+                            <td>{{ currencyUsers['GBP'].amount }}</td>
+                            <td>{{ formatNumber(currencies.items[5].sellPrice * currencyUsers['GBP'].amount) }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-xs">Sell</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">Avalible PLN: {{ formatNumber((currencyUsers['avalivblePLN'].pln)) }}</td>
+                        </tr>
+                    </thbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AngularJS v1.6.3 -->
+<script type="text/javascript" src="js/angular.js"></script>
+<!-- jQuery v3.2.0 -->
+<script type="text/javascript" src="js/jquery-3.2.0.js"></script>
+<!-- Bootstrap v3.3.7 -->
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<!-- Application -->
+<script type="text/javascript" src="js/exchange_app.js"></script>
+<!-- Charts v2.5.0-->
+<script type="text/javascript" src="js/Chart.js"></script>
+<script type="text/javascript" src="js/angular-chart.min.js"></script>
+<!-- AngularFire v1.2.0-->
+<script src="js/angularfire.min_120.js"></script>
+<!--Firebase v3.8.0-->
+<script src="js/firebase_380.js"></script>
+
+</body>
+</html>
