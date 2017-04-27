@@ -1,0 +1,57 @@
+.center-block{
+    float: none;
+}
+.btn-xs{
+    font-size: 9px;
+}
+body{
+    margin-top: 30px;
+}
+.name{
+    display: block;
+    margin: 10px auto;
+    width: 200px;
+    text-align: center;
+    border: 1px solid dodgerblue;
+}
+.table > tbody  {
+    font-size: 10px;
+}
+.table > thead  {
+    font-size: 10px;
+}
+.input-sm{
+    padding: 1px 5px;
+    font-size: 10px;
+    height: 20px;
+}
+
+.modal-dialog {
+    width: 423px;
+    margin: 20px auto;
+}
+
+.modal-footer {
+    padding: 12px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+.modal-content {
+    font-size: 12px;
+}
+.form-control{
+    height: 26px;
+    font-size: 12px;
+}
+
+.chartIcon{
+    margin-left:15px;
+    background-color: rgba(133,255,146,0.62);
+    height: 12px
+}
+.chartIcon img{
+    height: 12px;
+}
+.trBackground{
+    background-color: transparent !important;
+}
